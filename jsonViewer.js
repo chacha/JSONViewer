@@ -32,6 +32,9 @@ window.JSONViewer = (function(parent){
         }
         $(parent).append(createColumn(name, data, properties, members));
 
+        // Location
+        $(".location").append(name);
+
     }
 
     function createColumn(name, data, properties, members){
