@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title></title>
+        <script src="jquery.js"></script>
+        <script>
+            $(function(){
+
+                var clickEvent = function(loadData){
+                    return function(){
+                        viewData(loadData);
+                    }
+                }
+
+                function viewData(data){
+
+                    var html = $("<div />", {
+                        "class" : "column"
+                    });
+
+                    var members = $("<ul />", {
+                        "class" : "members"
+                    });                
+
+                    var properties = $("<ul />", {
+                        "class" : "properties"
+                    });
+                    
+                    for(var i in data){
+
+                        var item = $("<li />");
+                        if(typeof data[i] == "string")
+                        {
+                            $(item).append($("<span />", {
+                                "class" : "key",
+                                "text" : i + ": "
+                            }));
+
+                            $(item).append($("<span />", {
+                                "class" : "value",
+                                "text" : data[i]
+                            }));
+                            $(item).appendTo(properties);
+                        }
+                        else{
+                            $(item).text(i);
+                            $(item).click(clickEvent(data[i]))
+                            $(item).appendTo(members);
+                        }
+
+                    }
+
+                    $(html).append($("<div />", {
+                        "class" : "heading",
+                        "text" : "Members"
+                    }));
+                    $(properties).appendTo(html);
+                    $(html).append($("<div />", {
+                        "class" : "heading",
+                        "text" : "Properties"
+                    }));
+                    $(members).appendTo(html);
+                    $(".json-viewer").append(html);
+
+                }
+
+                viewData({
+                    "test" : "hello",
+                    "hello" : [
+                        "w",
+                        "o",
+                        "r",
+                        "l",
+                        "d"
+                    ]
+                })
+
+                
+
+            })
+        </script>
+        <style type="text/css">
+            .json-viewer{
+                border-right: 1px solid #CCC;
+                font-family: sans-serif;
+            }
+            .column{
+                border: 1px solid #CCC;
+                border-right: 0;
+                float: left;
+                width: 170px;
+                height: 500px;
+                overflow-y: scroll;
+            }
+
+            .column.array{
+                width:70px;
+            }
+
+            .column:last-child{
+                border-right: 1px solid #CCC;
+            }
+
+            .column ul{
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .column ul.members{
+                margin-top: 4px;
+            }
+
+            .column .members li{
+                padding: 5px;
+                padding-left: 10px;
+                border-bottom: 1px solid #CCC;
+                cursor: pointer;
+                font-size: 13px;
+            }
+
+            .column .members li:first-child{
+                border-top: 1px solid #CCC;
+}
+
+            .column .members li.active{
+                background-color: #99CCFF;
+            }
+
+            .column .members li:hover{
+                background-color: #DEEFFF;
+            }
+
+            .column .properties{
+                padding: 5px;
+                padding-left: 10px;
+                font-size: 13px;
+            }
+
+            .heading{
+                padding-left: 4px;
+                font-size: 13px;
+                font-weight: bold;
+                padding-top: 8px;
+                padding-bottom: 1px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="json-viewer">
+        </div>
+    </body>
+</html>
