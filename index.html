@@ -15,14 +15,153 @@
                     "appName" : "JSONViewer"
                 });
 
-                $("#load_repo").click(function(){
+                $("#load_102_repo").click(function(){
                     storage.gui.loadAll(function(data, meta){
-                        viewer.init(data);
+                        viewer.init(data, "data");
                         $("#repo_name").text("Repository #" + meta.id)
                     });
                 });
 
-                viewer.init(window);
+                $("#load_external_repo").click(function(){
+                    var d =  $("<div />", {
+                        "css" : {
+                            "fontFamily" : "sans-serif",
+                            "backgroundColor" : "white",
+                            "border" : "1px solid #ccc",
+                            "paddingTop" : "10px",
+                            "display" : "block"
+                        }
+                    });
+
+                    var o = $("<form />", {
+                        "id" : "loadExternal",
+                        css : {
+                            "border" : "8px solid #EEEEEF",
+                            "-webkit-border-radius" : "10px",
+                            "position" : "absolute",
+                            "top" : "5%",
+                            "left" : "30%",
+                            "right" : "30%"
+                        }
+                    });
+                    $(o).append(d);
+
+                    d.append($("<div />", {
+                        "text" : "External Repository",
+                        "css" : {
+                            "color" : "#CCC",
+                            "fontSize" : "30px",
+                            "fontWeight" : "bold",
+                            "padding" : "10px",
+                            "paddingTop" : "3px",
+                            "paddingBottom" : "15px",
+                        }
+                    }))
+
+                    var repo = $("<div />", {
+                        "css" : {
+                            "color" : "#666",
+                            "paddingLeft" : "10px",
+                            "paddingRight" : "10px",
+                            "paddingBottom" : "8px",
+                            "paddingTop" : "3px"
+                        }
+                    });
+
+                    repo.append($("<p />", {
+                        "text" : "Repository URL: ",
+                        "css" : {
+                            "fontWeight" : "bold",
+                            "fontSize" : "14px",
+                            "margin" : "0",
+                            "marginTop" : "10px",
+                            "marginBottom" : "3px"
+                        }
+                    }))
+
+                    repo.append($("<input />", {
+                        "id" : "externalRepository",
+                        "type" : "text",
+                        "css" : {
+                            "color" : "#666666",
+                            "fontSize" : "20px",
+                            "padding" : "3px",
+                            "width" : "100%"
+                        }
+                    }));
+
+                    repo.append($("<p />", {
+                        "text" : "The URL to a JSON-formatted page to retrieve data from.",
+                        "css" : {
+                            "color" : "#666",
+                            "margin" : "0",
+                            "marginTop" : "10px",
+                            "fontSize" : "12px",
+                            "marginBottom" : "0px"
+                        }
+                    }))
+
+                    d.append(repo);
+
+                    var submit = $("<div />", {
+                        "css" : {
+                            "backgroundColor" : "#EEEEEF",
+                            "borderTop" : "1px solid #cccccc",
+                            "marginTop" : "0px",
+                            "padding" : "1px",
+                            "paddingRight" : "1px",
+                            "paddingBottom" : "1px",
+                            "height" : "45px"
+                        }
+                    });
+
+                    submit.append($("<button />", {
+                        "text" : "Load",
+                        "css" : {
+                            "border" : "1px solid #CCCCCC",
+                            "background" : "-webkit-gradient(linear, left top, left bottom, from(#3399FF), to(#3399FF), color-stop(0.5, #55AAFF), color-stop(0.5, #3399FF))",
+                            "background" : "white",
+                            "fontSize" : "20px",
+                            "fontWeight" : "bold",
+                            "padding" : "7px",
+                            "paddingLeft" : "15px",
+                            "paddingRight" : "15px",
+                            "opacity" : "1",
+                            "float" : "right"
+                        },
+                        "mouseover" : function(){
+                            $(this).css({
+                                "border" : "1px solid #EEEEEF",
+                                "backgroundColor" : "#3399FF",
+                                "color" : "white"
+                            });
+                        },
+                        "mouseout" : function(){
+                            $(this).css({
+                                "border" : "1px solid #CCCCCC",
+                                "backgroundColor" : "white",
+                                "color" : "#666"
+                            });
+                        },
+                        "click" : function(){
+                            $.ajax({
+                                url : $("#externalRepository").val(),
+                                dataType : "jsonp",
+                                success : function(data){
+                                    viewer.init(data, "data");
+                                    $("#loadExternal").remove();
+                                }
+                            });
+                            return false;
+                        }
+                    }));
+
+                    d.append(submit);
+
+                    $("body").append(o);
+                });
+
+                viewer.init(window, "window");
                 
             })
         </script>
@@ -36,7 +175,7 @@
                     font-family: sans-serif;
                 }
                 .inside-container{
-                    width: 10000px;
+                    width: 100000px;
         }
                 .column{
                     border-right: 1px solid #CCC;
@@ -156,17 +295,37 @@
                 }
                 .repository{
                 }
-                #load_repo{
+                #load_102_repo{
                     text-decoration: underline;
                     cursor: pointer;
                 }
+                #load_external_repo{
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+                .recursive{
+                    font-style: italic;
+                }
+                .length{
+                    float: right;
+                    font-size: 13px;
+                    color: #999;
+                    font-style: normal;
+                }
+                .number{
+                    color: purple;
+                }
+                .string{
+                    color: #666;
+}
             </style>
     </head>
     <body>
         <div class="header">
             <div class="info">
-                Currently Viewing: <span class="repository" id="repo_name">Repository #1</span><br/>
-                <a id="load_repo">Load New Repository</a>
+                Currently Viewing: <span class="repository" id="repo_name">Window Object</span><br/>
+                <a id="load_102_repo">Load New Repository</a> -
+                <a id="load_external_repo">Load External Repository</a>
             </div>
             <h1>102 Storage</h1>
         </div>
