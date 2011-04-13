@@ -3,7 +3,8 @@ window.JSONViewer = (function(parent){
     var obj = {};
 
     obj.init = function(data){
-        loadData("test", data);
+        $(parent).html("");
+        loadData("data", data);
     }
 
     function loadData(name, data){
@@ -12,6 +13,14 @@ window.JSONViewer = (function(parent){
         var properties = [];
 
         for(var i in data){
+            if(data[i] === null){
+                properties.push({
+                    "key" : i,
+                    "value" : null
+                });
+                continue;
+            }
+
             var type = typeof data[i];
             switch(type){
                 case 'string':
@@ -32,8 +41,27 @@ window.JSONViewer = (function(parent){
         }
         $(parent).append(createColumn(name, data, properties, members));
 
-        // Location
-        $(".location").append(name);
+        var location = [];
+        $.each($(".column"), function(){
+            var name = $(this).children(".element").text();
+            var o = name.indexOf(" ");
+            location.push(name.substring(0, o));
+        })
+
+        var text = "";
+        for(var x in location){
+            if(isNaN(location[x])){
+                if(x == 0){
+                    text += location[x];
+                }else{
+                    text += "." + location[x];
+                }
+            }else{
+                text += "[" + location[x] + "]";
+            }
+        }
+
+        $("#location-text").text(text);
 
     }
 
@@ -81,17 +109,17 @@ window.JSONViewer = (function(parent){
 
             $(text).append($("<span />", {
                 "class" : "key",
-                "text" : properties[i].key + ": "
+                html : properties[i].key + ": "
             }));
 
             $(text).append($("<span />", {
                 "class" : "value",
-                "text" : properties[i].value
+                html : wrap(typeof properties[i].value, properties[i].value)
             }));
 
             $(html).append(text);
         }
-
+        $(html).append($(("<li />")));
         return html;
 
     }
@@ -106,10 +134,17 @@ window.JSONViewer = (function(parent){
 
         for(var i in members){
 
-            var text = $("<li />", {
-                "text" : members[i].key,
-                "click" : createClickEvent(members[i].key, members[i].value)
-            });
+            var text = $("<li />");
+
+            if(typeof members[i].value == "function"){
+                $(text).html(wrap(typeof members[i].value, members[i].key));
+                $(text).click(createClickEvent(members[i].key, members[i].value));
+            }
+            else
+            {
+                $(text).html(wrap(typeof members[i].value, members[i].key));
+                $(text).click(createClickEvent(members[i].key, members[i].value));
+            }
 
             $(html).append(text);
         }
