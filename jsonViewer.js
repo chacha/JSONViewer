@@ -41,17 +41,21 @@ window.JSONViewer = (function(element){
         // Add this data to the path
         obj.path.push({
             "key" : name,
-            "value" : data
+            "value" : data,
+            "level" : level,
+            "recursive" : recursive
         });
 
         var members = [];
         var properties = [];
 
         for(var i in data){
+
             if(data[i] === null){
                 properties.push({
                     "key" : i,
-                    "value" : null
+                    "value" : null,
+                    "prototype" : false
                 });
                 continue;
             }
@@ -63,32 +67,51 @@ window.JSONViewer = (function(element){
                 case 'boolean':
                     properties.push({
                         "key" : i,
-                        "value" : data[i]
+                        "value" : data[i],
+                        "prototype" : false
                     });
                     break;
                 default:
                     members.push({
                         "key" : i,
-                        "value" : data[i]
+                        "value" : data[i],
+                        "prototype" : false
                     });
                     break;
             }
         }
+        
         $(element).append(createColumn(name, data, properties, members, level, recursive));
 
         var location = [];
 
-        var text = "";
+        var text = $("<span />", {
+            "id" : "location-text"
+        });
         for(var x in obj.path){
+            var click = createLocationEvent(obj.path[x].key, obj.path[x].value, obj.path[x].level, obj.path[x].recursive)
+
             var item = obj.path[x];
             if(isNaN(item.key)){
                 if(x == 0){
-                    text += wrap(typeof item.value, item.key);
+                    $(text).append($("<span />", {
+                        "class" : typeof item.value,
+                        "text" : item.key,
+                        "click" : click
+                    }));
                 }else{
-                    text += "." + wrap(typeof item.value, item.key);
+                    $(text).append($("<span />", {
+                        "class" : typeof item.value,
+                        "text" : "." + item.key,
+                        "click" : click
+                    }));
                 }
             }else{
-                text += "[" + wrap(typeof item.value, item.key) + "]";
+                $(text).append($("<span />", {
+                        "class" : typeof item.value,
+                        "text" : "[" + item.key + "]",
+                        "click" : click
+                    }));
             }
         }
 
@@ -158,6 +181,10 @@ window.JSONViewer = (function(element){
                 html : wrap(typeof properties[i].value, properties[i].value)
             }));
 
+            if(properties[i].isPrototype == true){
+                $(text).addClass("prototype")
+            }
+
             $(html).append(text);
         }
         $(html).append($(("<li />")));
@@ -202,6 +229,10 @@ window.JSONViewer = (function(element){
             $(text).html(name);
             $(text).click(createClickEvent(members[i].key, members[i].value, level, recursive));
 
+            if(members[i].isPrototype == true){
+                $(text).addClass("prototype");
+            }
+
             $(html).append(text);
         }
 
@@ -216,7 +247,6 @@ window.JSONViewer = (function(element){
         var top = obj.top;
         var parent = obj.current;
         var current = data;
-        
         return function(){
 
             // Remove All Columns
@@ -226,11 +256,31 @@ window.JSONViewer = (function(element){
         }
     }
 
+    function createLocationEvent (name, data, level, recursive){
+        var top = obj.top;
+        var parent = obj.current;
+        var current = data;
+
+        return function(){
+            // Remove All Columns
+            var t = obj.path.slice(0, level);
+            obj.path = t;
+            if(level == 0){
+                $(".column").remove();
+            }else{
+                $(".column").eq(level).nextAll().remove();
+                $(".column").eq(level).remove();
+            }
+            loadData(name, data, parent, level, recursive)
+        }
+    }
+
     /*
      * Wraps a value in a <span>
      */
     function wrap(type, value){
-        return "<span class=\"" + type + "\">" + value + "</span>";
+        var o =  "<span class=\"" + type + "\">" + value + "</span>";
+        return o;
     }
 
     return obj;
