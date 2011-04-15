@@ -173,6 +173,7 @@
                 }
                 .json-viewer{
                     font-family: sans-serif;
+                    margin-top: 70px;
                 }
                 .inside-container{
                     width: 100000px;
@@ -181,7 +182,7 @@
                     border-right: 1px solid #CCC;
                     border-right: 0;
                     float: left;
-                    height: 88.5%;
+                    height: 92%;
                     overflow-y: scroll;
                     display: inline;
                 }
@@ -269,18 +270,31 @@
                     float: right;
                 }
                 .location{
+                    background-color: white;
                     color: #666;
-                    border-top: 1px solid #CCC;
+                    border-top: 1px solid #EEE;
                     border-bottom: 1px solid #CCC;
                     padding: 3px;
                     padding-left: 5px;
                     font-family: monospace;
+                    -webkit-box-shadow: 0px 1px 2px #EEE;
+                    z-index: 4;
+                    position: fixed;
+                    top: 45px;
+                    left: 0;
+                    right: 0;
                 }
                 #location-text{
                     color: #333;
                 }
                 #location-text span{
                     cursor: pointer;
+                }
+                .header{
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
                 }
                 h1{
                     color: #666;
