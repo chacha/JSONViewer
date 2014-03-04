@@ -55,7 +55,6 @@ window.JSONViewer = (function(element){
 
         var column = obj.html.createColumn(name, data, children.properties, children.members, level, recursive);
         $(element).append(column);
-        console.log($(column).offset());
         $(window).scrollLeft($(column).offset().left);
 
         obj.location.update();
